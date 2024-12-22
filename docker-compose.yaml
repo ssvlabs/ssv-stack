@@ -2,6 +2,7 @@ services:
   #  SSV node
   ssv-node:
     image: docker.io/ssvlabs/ssv-node:latest
+    pull_policy: always
     env_file:
       - path: ./ssv.env
         required: false
