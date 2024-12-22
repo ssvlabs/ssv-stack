@@ -1,31 +1,21 @@
 services:
   #  SSV node
   ssv-node:
-    image: local.io/ssvlabs/ssv:otel-metrics2
-    #image: ${SSV_IMAGE_REPOSITORY:-docker.io/ssvlabs/ssv-node}:${SSV_IMAGE_TAG:-v2.1.0}
+    image: docker.io/ssvlabs/ssv-node:latest
     env_file:
       - path: ./ssv.env
         required: false
     environment:
-      - PASSWORD_FILE=/data/${PASSWORD_FILE:-password}
-      - PRIVATE_KEY_FILE=/data/${PRIVATE_KEY_FILE:-private_key}
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - CONFIG_PATH=${CONFIG_PATH:-./config/config.example.yaml}
-      - SHARE_CONFIG=${SHARE_CONFIG}
-      - CONSENSUS_TYPE=${CONSENSUS_TYPE:-validation}
-      - TCP_PORT=${SSV_PORT_P2P_TCP:-13001}
-      - UDP_PORT=${SSV_PORT_P2P_UDP:-12001}
-      - P2P_MAX_PEERS=${P2P_MAX_PEERS:-70}
-      - DB_PATH=${DB_PATH:-/data/db}
-      - METRICS_API_PORT=${METRICS_API_PORT:-15000}
-      - NETWORK=${NETWORK:-holesky}
+      - CONFIG_PATH=./config/config.example.yaml
+      - CONSENSUS_TYPE=validation
     ports:
-      - ${SSV_PORT_P2P_TCP:-13001}:${SSV_PORT_P2P_TCP:-13001}/tcp
-      - ${SSV_PORT_P2P_UDP:-12001}:${SSV_PORT_P2P_UDP:-12001}/udp
-      - ${METRICS_API_PORT:-15000}:${METRICS_API_PORT:-15000}
+      - 13001:13001/tcp # p2p port
+      - 12001:12001/udp # p2p port
+      - 127.0.0.1:15000:15000 # metrics port
+      - 127.0.0.1:16000:16000 # ssv api port
     networks: [local-docker]
     volumes:
-      - ${DATA_FOLDER:-./ssv-node-data}:/data
+      - ./ssv-node-data:/data
     restart: unless-stopped
     depends_on:
       ssv-key-generation:
@@ -35,14 +25,10 @@ services:
   # SSV node key generation
   # only generates a keypair if it doesnt exists and then it persists it on disk
   ssv-key-generation:
-    image: local.io/ssvlabs/ssv:otel-metrics2
-    #image: ${SSV_IMAGE_REPOSITORY:-docker.io/ssvlabs/ssv-node}:${SSV_IMAGE_TAG:-v2.1.0}
+    image: docker.io/ssvlabs/ssv-node:latest
     env_file:
       - path: ./ssv.env
         required: false
-    environment:
-        - PRIVATE_KEY_FILE=/data/${PRIVATE_KEY_FILE:-private_key}
-        - PASSWORD_FILE=/data/${PASSWORD_FILE:-password}
     command: /bin/bash -c '
       set -e;
       if [ -f $${PRIVATE_KEY_FILE} ]; then 
@@ -59,7 +45,7 @@ services:
       fi'
     volumes:
       - type: bind
-        source: ${DATA_FOLDER:-./ssv-node-data}
+        source: ./ssv-node-data
         target: /data
         bind:
           create_host_path: true
@@ -71,7 +57,7 @@ services:
   # |_| |_| |_|\___/|_| |_|_|\__\___/|_|  |_|_| |_|\__, |
   #                                                |___/
   prometheus:
-    image: docker.io/prom/prometheus:${PROMETHEUS_VERSION:-latest}
+    image: docker.io/prom/prometheus:latest
     user: ":"
     networks: [local-docker]
     command:
@@ -80,7 +66,7 @@ services:
       - "127.0.0.1:9090:9090" # Expose Prometheus on 127.0.0.1:9090
     volumes:
       - type: bind
-        source: ${PROMETHEUS_DATA_FOLDER:-./prometheus-data}
+        source: ./prometheus-data
         target: /prometheus
         bind:
           create_host_path: true
@@ -102,7 +88,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true # Optional: enable anonymous access
     volumes:
       - type: bind
-        source: ${GRAFANA_DATA_FOLDER:-./grafana-data}
+        source: ./grafana-data
         target: /var/lib/grafana
         bind:
           create_host_path: true
