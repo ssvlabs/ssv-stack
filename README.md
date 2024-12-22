@@ -41,6 +41,8 @@ docker-compose up -d
 ### Access Grafana
 Open your browser and go to [http://localhost:3000](http://localhost:3000) and login with `admin`/`admin`. You can change the password later.
 
+In the `Dashboards` section you should be able to find the `SSV Operational` dashboard. Unless the node is registered with the SSV network and has validators, some of the dashboard's columns might be empty.
+
 **WARNING**: Grafana and Prometheus is running only on the `localhost` by default. You should change the password and/or restrict access to it. If you expose Grafana and Prometheus to the internet, you should be extra careful and make sure they are secured.
 
 ## SSV node private key
