@@ -18,7 +18,7 @@ cd ssv-stack
 ```
 ### Adjust `env` file
 ```bash
-cp ssv.env.example ssv.env
+cp ssv.example.env ssv.env
 ```
 Edit the `ssv.env` file and adjust the settings to your needs.
 The minimum you need to change is:
