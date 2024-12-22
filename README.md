@@ -8,6 +8,7 @@ It includes Prometheus, which scrapes the SSV node and Grafana which has dashboa
 ### Prerequisites
 * `docker`
 * `docker-compose` version >= 2.0
+* `ssv-node` version >= `v2.1.0`
 
 ### Clone the repository
 
