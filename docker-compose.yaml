@@ -1,9 +1,8 @@
 services:
   #  SSV node
   ssv-node:
-    image: local.io/ssvlabs/ssv:latest
-    #image: docker.io/ssvlabs/ssv-node:${SSV_IMAGE_TAG:-latest}
-    #pull_policy: always
+    image: local.io/ssvlabs/ssv:otel-metrics2
+    #image: ${SSV_IMAGE_REPOSITORY:-docker.io/ssvlabs/ssv-node}:${SSV_IMAGE_TAG:-v2.1.0}
     env_file:
       - path: ./ssv.env
         required: false
@@ -36,8 +35,8 @@ services:
   # SSV node key generation
   # only generates a keypair if it doesnt exists and then it persists it on disk
   ssv-key-generation:
-    image: local.io/ssvlabs/ssv:${SSV_IMAGE_TAG:-latest}
-    #pull_policy: always
+    image: local.io/ssvlabs/ssv:otel-metrics2
+    #image: ${SSV_IMAGE_REPOSITORY:-docker.io/ssvlabs/ssv-node}:${SSV_IMAGE_TAG:-v2.1.0}
     env_file:
       - path: ./ssv.env
         required: false
@@ -72,7 +71,7 @@ services:
   # |_| |_| |_|\___/|_| |_|_|\__\___/|_|  |_|_| |_|\__, |
   #                                                |___/
   prometheus:
-    image: prom/prometheus:${PROMETHEUS_VERSION:-v2.50.1}
+    image: docker.io/prom/prometheus:${PROMETHEUS_VERSION:-latest}
     user: ":"
     networks: [local-docker]
     command:
@@ -108,6 +107,7 @@ services:
         bind:
           create_host_path: true
       - ./grafana:/etc/grafana/provisioning # Load custom dashboards and data sources
+      - ./ssv-grafana-dashboard:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
     restart: always
