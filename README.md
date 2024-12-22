@@ -1,5 +1,5 @@
 # SSV stack 
-DISCLAIMER: SVV stack is an example repository how you can run SSV node with monitoring stack. It is not recommended to use it in production.
+DISCLAIMER: SSV stack is an example repository how you can run SSV node with monitoring stack. It is not recommended to use it in production.
 
 It includes Prometheus, which scrapes the SSV node and Grafana which has dashboard for the SSV node.
 
