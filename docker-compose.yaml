@@ -32,6 +32,7 @@ services:
         required: false
     command: /bin/bash -c '
       set -e;
+      echo $${PRIVATE_KEY_FILE};
       if [ -f $${PRIVATE_KEY_FILE} ]; then 
       echo "private key already exists, skipping generation.";
       else 
