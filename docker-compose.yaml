@@ -5,7 +5,7 @@ services:
     pull_policy: always
     env_file:
       - path: ./ssv.env
-        required: false
+        required: true
     environment:
       - CONFIG_PATH=./config/config.example.yaml
       - CONSENSUS_TYPE=validation
@@ -29,9 +29,13 @@ services:
     image: docker.io/ssvlabs/ssv-node:latest
     env_file:
       - path: ./ssv.env
-        required: false
+        required: true
     command: /bin/bash -c '
       set -e;
+      if [ -z "$${PRIVATE_KEY_FILE}" ] || [ -z "$${PASSWORD_FILE}" ]; then
+      echo ERROR - PRIVATE_KEY_FILE or PASSWORD_FILE is not set;
+      exit 1;
+      fi;
       echo $${PRIVATE_KEY_FILE};
       if [ -s $${PRIVATE_KEY_FILE} ]; then 
       echo "private key already exists, skipping generation.";
