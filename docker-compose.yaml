@@ -33,10 +33,10 @@ services:
     command: /bin/bash -c '
       set -e;
       echo $${PRIVATE_KEY_FILE};
-      if [ -f $${PRIVATE_KEY_FILE} ]; then 
+      if [ -s $${PRIVATE_KEY_FILE} ]; then 
       echo "private key already exists, skipping generation.";
       else 
-      if [ ! -f $${PASSWORD_FILE} ]; then 
+      if [ ! -s $${PASSWORD_FILE} ]; then 
       echo "Password file doesnt exists, generating random password file";
       echo $$(openssl rand -base64 32) > $${PASSWORD_FILE};
       fi;
