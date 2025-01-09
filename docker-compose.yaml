@@ -46,11 +46,7 @@ services:
       echo "Backup the password file $${PASSWORD_FILE} and the private key file $${PRIVATE_KEY_FILE} to separate device!!!";
       fi'
     volumes:
-      - type: bind
-        source: ./ssv-node-data
-        target: /data
-        bind:
-          create_host_path: true
+      - ./ssv-node-data:/data
 
   #                        _ _             _
   #  _ __ ___   ___  _ __ (_) |_ ___  _ __(_)_ __   __ _

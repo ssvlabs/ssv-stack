@@ -1,5 +1,8 @@
 .idea
-ssv-node-data
+ssv-node-data/private_key
+ssv-node-data/password
+ssv-node-data/db
+ssv-node-data/*.log
 prometheus-data
 grafana-data
 ssv.env
