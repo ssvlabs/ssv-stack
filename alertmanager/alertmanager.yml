@@ -1,0 +1,14 @@
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'telegram'
+  routes:
+    - receiver: 'telegram'
+
+receivers:
+- name: 'telegram'
+  telegram_configs:
+    - bot_token_file: '/etc/alertmanager/telegram_bot_token.txt'
+      chat_id: 123456
