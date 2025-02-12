@@ -73,6 +73,7 @@ services:
         bind:
           create_host_path: true
       - ./prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
     restart: unless-stopped
     depends_on:
       - ssv-node
@@ -99,6 +100,26 @@ services:
     depends_on:
       - prometheus
     restart: always
+  alertmanager:
+    image: prom/alertmanager:latest
+    user: ":"
+    networks:
+      - local-docker
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    ports:
+      - "127.0.0.1:9093:9093"
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - type: bind
+        source: ./alertmanager/alertmanager.yml
+        target: /etc/alertmanager/alertmanager.yml
+      - ./alertmanager/telegram_bot_token.txt:/etc/alertmanager/telegram_bot_token.txt
+    restart: unless-stopped
+    depends_on:
+      - prometheus
 
 networks:
   local-docker:

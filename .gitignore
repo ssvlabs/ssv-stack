@@ -6,3 +6,4 @@ ssv-node-data/*.log
 prometheus-data
 grafana-data
 ssv.env
+alertmanager/telegram_bot_token.txt

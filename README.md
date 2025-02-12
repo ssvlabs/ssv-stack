@@ -28,6 +28,10 @@ The minimum you need to change is:
 
 Check the `ssv.example.env` file for details for all the others settings you can adjust.
 
+### Alerting rules
+You can adjust the alerting rules in the `./prometheus/alert-rules.yml` file.
+
+For this to work, you can configure alertmanager with your telegram bot token and chat id. You can do this by editing the `./alertmanager/alertmanager.yml` file. Put the raw token in the `alertmanager/telegram_bot_token.txt`.
 
 ### SSV node private key
 #### Generate New Key

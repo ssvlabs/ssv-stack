@@ -1,0 +1,77 @@
+groups:
+- name: ssv-alerts
+  rules:
+    - alert: SSVNodeDown
+      expr: up{job="ssv"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "SSV Node is not responding"
+        description: "No scrape data from the SSV node for more than 2 minutes."
+
+    - alert: SSVNodeBehindChain
+      expr: ssv_cl_sync_distance > 5
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "SSV Node is behind the consensus chain"
+        description: |
+          ssv_cl_sync_distance is above 5 blocks for more than 5 minutes.
+          This could indicate the beacon node is lagging or offline.
+
+    - alert: SSVNodeBehindExecution
+      expr: ssv_el_sync_distance > 5
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "SSV Node is behind the execution chain"
+        description: |
+          ssv_el_sync_distance is above 5 blocks for more than 5 minutes.
+          This could indicate the execution client is lagging or offline.
+
+    - alert: SSVLowPeerCount
+      expr: ssv_p2p_peers_connected < 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "SSV node has too few P2P peers"
+        description: |
+          ssv_p2p_peers_connected is below 2 for more than 5 minutes.
+          The node may be unable to participate reliably in consensus or duties.
+
+    - alert: SSVNoDutiesScheduled
+      expr: rate(ssv_duty_scheduler_executions_total{ssv_runner_role="AGGREGATOR_RUNNER"}[10m]) == 0
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        summary: "No new duties have been scheduled in 10 minutes"
+        description: |
+          The AGGREGATOR_RUNNER role has not scheduled any new duties in the last 10 minutes.
+          Check the node logs, network connections, and beacon node status.
+
+    - alert: SSVBeaconNodeInactive
+      expr: ssv_cl_sync_status{ssv_cl_sync_status="inactive"} == 1
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Beacon node is reported as inactive"
+        description: |
+          The metric ssv_cl_sync_status indicates the beacon node is inactive 
+          for more than 5 minutes. This will disrupt the SSV node's operation.
+
+    - alert: SSVValidatorPerformance
+      expr: sum(ssv_validator_submissions{ssv_beacon_role="ATTESTER"}) / sum(ssv_validator_validators_per_status{ssv_validator_status="participating"}) < 0.95
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "SSV Validator performance is below threshold"
+        description: |
+          The ratio of submitted attestations to active validators is below 95% for more than 1 hour.
+          This could indicate performance issues with the SSV node or network.
