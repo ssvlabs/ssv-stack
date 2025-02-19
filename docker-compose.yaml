@@ -123,4 +123,4 @@ services:
 
 networks:
   local-docker:
-    driver: host
+    driver: bridge
