@@ -3,9 +3,7 @@ services:
   ssv-node:
     image: docker.io/ssvlabs/ssv-node:latest
     pull_policy: always
-    env_file:
-      - path: ./ssv.env
-        required: true
+    env_file: ./ssv.env
     environment:
       - CONFIG_PATH=./config/config.example.yaml
       - CONSENSUS_TYPE=validation
@@ -27,9 +25,7 @@ services:
   # only generates a keypair if it doesnt exists and then it persists it on disk
   ssv-key-generation:
     image: docker.io/ssvlabs/ssv-node:latest
-    env_file:
-      - path: ./ssv.env
-        required: true
+    env_file: ./ssv.env
     command: /bin/bash -c '
       set -e;
       if [ -z "$${PRIVATE_KEY_FILE}" ] || [ -z "$${PASSWORD_FILE}" ]; then
