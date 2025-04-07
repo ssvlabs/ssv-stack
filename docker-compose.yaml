@@ -109,9 +109,6 @@ services:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
     ports:
       - "127.0.0.1:9093:9093"
-    environment:
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
     volumes:
       - type: bind
         source: ./alertmanager/alertmanager.yml
