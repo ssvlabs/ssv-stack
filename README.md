@@ -49,6 +49,24 @@ Run in background
 docker compose up -d
 ```
 
+### Run with DKG node
+You can also run the stack with DKG, simplifying the setup process.
+First, you need to edit the config in `./dkg-data/operator.yaml`.
+The minimum you need to change is:
+* `operatorID` - the ID of your operator
+* `ethEndpointURL` - HTTP Address of your Execution node endpoint
+
+Also, you'll need to expose port `3030` on your firewall for the DKG endpoint to be available.
+
+Make sure you're in `ssv-stack` directory, and then run the command:
+```bash
+docker compose --profile dkg up
+```
+Or run in background
+```bash
+docker compose --profile dkg up -d
+```
+
 ## Access Grafana
 Open your browser and go to [http://localhost:3000](http://localhost:3000) and login with `admin`/`admin`. You can change the password later.
 

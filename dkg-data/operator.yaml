@@ -1,0 +1,16 @@
+# You only need to change operator ID and ethEndpointURL
+# Make sure to open port 3030 on firewall
+
+privKey: ./ssv-node-data/private_key
+privKeyPassword: ./ssv-node-data/password
+operatorID: <YOUR_OPERATOR_ID>
+port: 3030 
+logLevel: info
+logFormat: json
+logLevelFormat: capitalColor
+logFilePath: ./data/debug.log
+outputPath: ./data/output
+ethEndpointURL: http://ethnode:8545 #HTTP Address of Execution Node
+
+# serverTLSCertPath: ./data/ssl/tls.crt #Only enable if manually generated TLS certificate
+# serverTLSKeyPath: ./data/ssl/tls.key #Only enable if manually generated TLS key
