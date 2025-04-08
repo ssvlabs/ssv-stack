@@ -118,6 +118,24 @@ services:
     depends_on:
       - prometheus
 
+# Benchmark tool
+# To run: edit command below and start with docker compose run ssv-pulse
+# The tool will run for 60 minutes by default
+  ssv-pulse:
+    profiles: ["ssv-pulse"]
+    image: ghcr.io/ssvlabs/ssv-pulse:latest
+    command: 
+      - 'benchmark'
+      - '--consensus-addr=<YOUR_ADDRESS_HERE>' # Change to Consensus Node's address, e.g. http://127.0.0.1:5052
+      - '--execution-addr=<YOUR_ADDRESS_HERE>' # Change to Execution Node's address, e.g. http://127.0.0.1:8545
+      - '--ssv-addr=http://ssv-stack-ssv-node-1:16000'
+      - '--duration=60m'
+      # - '--network=hoodi' # Add this if you run a Hoodi Node
+      # - '--platform linux/arm64' # Add this if you run on an arm64 machine
+    networks:
+      - local-docker
+    pull_policy: always
+
 networks:
   local-docker:
     driver: bridge
