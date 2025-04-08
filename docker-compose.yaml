@@ -133,7 +133,7 @@ services:
       # - '--network=hoodi' # Add this if you run a Hoodi Node
       # - '--platform linux/arm64' # Add this if you run on an arm64 machine
     networks:
-      - local-network
+      - local-docker
     pull_policy: always
 
 networks:
