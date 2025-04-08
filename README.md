@@ -58,8 +58,7 @@ In the `Dashboards` section you should be able to find the `SSV Operational` das
 
 ## Benchmarking tool
 The Stack comes with a benchmarking tool which is [ssv-pulse](https://github.com/ssvlabs/ssv-pulse).
-It helps with troubleshooting and the results can be interpeted with our [Troubleshooting page](https://docs.ssv.network/operators/operator-node/maintenance/troubleshooting/#checklists-for-troubleshooting).
-
+It helps with troubleshooting and the results can be interpreted with our [Troubleshooting page](https://docs.ssv.network/operators/operator-node/maintenance/troubleshooting/#checklists-for-troubleshooting).
 To run the tool:
 * Edit `docker-compose.yaml`, at the very end of the file
 * Change `--consensus-addr` to your Consensus HTTP and `--execution-addr` to Execution HTTP
