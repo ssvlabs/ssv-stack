@@ -73,3 +73,13 @@ Open your browser and go to [http://localhost:3000](http://localhost:3000) and l
 In the `Dashboards` section you should be able to find the `SSV Operational` dashboard. Unless the node is registered with the SSV network and has validators, some of the dashboard's columns might be empty.
 
 **WARNING**: Grafana and Prometheus is running only on the `localhost` by default. You should change the password and/or restrict access to it. If you expose Grafana and Prometheus to the internet, you should be extra careful and make sure they are secured.
+
+## Benchmarking tool
+The Stack comes with a benchmarking tool which is [ssv-pulse](https://github.com/ssvlabs/ssv-pulse).
+It helps with troubleshooting and the results can be interpreted with our [Troubleshooting page](https://docs.ssv.network/operators/operator-node/maintenance/troubleshooting/#checklists-for-troubleshooting).
+To run the tool:
+* Edit `docker-compose.yaml`, at the very end of the file
+* Change `--consensus-addr` to your Consensus HTTP and `--execution-addr` to Execution HTTP
+* If running on Hoodi - uncomment `--network=hoodi`
+* Run `docker compose run ssv-pulse`
+* The tool will be running for 60 minutes and produce a table with results
