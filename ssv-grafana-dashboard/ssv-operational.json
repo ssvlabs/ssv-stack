@@ -1148,7 +1148,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(ssv_validator_submissions{pod=~\"$pod\", ssv_beacon_role=\"ATTESTER\"}) / sum(ssv_validator_validators_per_status{pod=~\"$pod\", ssv_validator_status=\"participating\"})",
+          "expr": "sum(ssv_validator_submissions{pod=~\"$pod\", ssv_beacon_role=\"ATTESTER\"}) / sum(ssv_validator_validators_per_status{pod=~\"$pod\", ssv_validator_status=\"attesting\"})",
           "instant": false,
           "legendFormat": "Submitted percentage",
           "range": true,
