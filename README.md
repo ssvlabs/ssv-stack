@@ -8,7 +8,7 @@ It includes Prometheus, which scrapes the SSV node and Grafana which has dashboa
 ### Prerequisites
 * `docker`
 * `docker compose` version >= 2.0
-* `ssv-node` version >= `v2.1.0`
+* `ssv-node` version >= `v2.5.0` (required from the Gloas fork on)
 
 ### Clone the repository
 
@@ -48,6 +48,27 @@ Run in background
 ```bash
 docker compose up -d
 ```
+
+### Glamsterdam (Gloas) upgrade
+Before the Gloas fork on your network, upgrade your Execution and Beacon clients to releases that support Glamsterdam. Upgrade all Beacon nodes first, then restart the stack to pull the latest SSV node image:
+```bash
+docker compose pull
+docker compose up -d
+```
+See [Configuring ePBS (Gloas)](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs) for the fork schedule and details.
+
+### Builders configuration (optional)
+The Gloas (ePBS) `Builders` block, used to connect to specific builders or relays, is available only in YAML. To use it:
+* Create `./ssv-node-data/builders.yaml` with the block, for example:
+```yaml
+Builders:
+  Entries:
+    - URL: "https://relay.example.com"
+```
+* Uncomment `SHARE_CONFIG=/data/builders.yaml` in `ssv.env`
+* Restart the stack with `docker compose up -d`
+
+The `Builders` block must be identical on all operators of every cluster that shares a validator. See [Direct builder connections](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#direct-builder-connections-optional) for details.
 
 ### Run with DKG node
 You can also run the stack with DKG, simplifying the setup process.
