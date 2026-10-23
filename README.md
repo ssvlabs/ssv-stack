@@ -55,6 +55,8 @@ Before the Gloas fork on your network, upgrade your Execution and Beacon clients
 docker compose pull ssv-node
 docker compose up -d --force-recreate ssv-node
 ```
+If the fork date changes, upgrade your Beacon nodes again and recreate the SSV node the same way. Otherwise it shuts down near the old fork epoch.
+
 See [Configuring ePBS (Gloas)](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs) for the fork schedule and details.
 
 ### Builders configuration (optional)
@@ -70,6 +72,7 @@ Builders:
 ```bash
 docker compose up -d --force-recreate ssv-node
 ```
+If `builders.yaml` is missing or the `Builders` block is invalid, the node won't start. Check `docker compose logs ssv-node` after recreating it.
 
 The `Builders` block must be identical on all operators of every cluster that shares a validator. See [Direct builder connections](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#direct-builder-connections-optional) for details, and [Using relays after Gloas](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#using-relays-after-gloas) to connect to relays.
 
