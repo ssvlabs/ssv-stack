@@ -50,10 +50,10 @@ docker compose up -d
 ```
 
 ### Glamsterdam (Gloas) upgrade
-Before the Gloas fork on your network, upgrade your Execution and Beacon clients to releases that support Glamsterdam. Upgrade all Beacon nodes first, then restart the stack to pull the latest SSV node image:
+Before the Gloas fork on your network, upgrade your Execution and Beacon clients to releases that support Glamsterdam. Upgrade all Beacon nodes first, then pull the latest SSV node image and restart the node:
 ```bash
-docker compose pull
-docker compose up -d
+docker compose pull ssv-node
+docker compose up -d ssv-node
 ```
 See [Configuring ePBS (Gloas)](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs) for the fork schedule and details.
 
@@ -65,8 +65,11 @@ Builders:
   Entries:
     - URL: "https://builder.example.com"
 ```
-* Uncomment `SHARE_CONFIG=/data/builders.yaml` in `ssv.env`
-* Restart the stack with `docker compose up -d`
+* Add `SHARE_CONFIG=/data/builders.yaml` to `ssv.env`, or uncomment it if your `ssv.env` already contains it
+* Recreate the node so it loads the file, also after any later change to `builders.yaml`:
+```bash
+docker compose up -d --force-recreate ssv-node
+```
 
 The `Builders` block must be identical on all operators of every cluster that shares a validator. See [Direct builder connections](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#direct-builder-connections-optional) for details, and [Using relays after Gloas](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#using-relays-after-gloas) to connect to relays.
 
