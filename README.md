@@ -50,10 +50,10 @@ docker compose up -d
 ```
 
 ### Glamsterdam (Gloas) upgrade
-Before the Gloas fork on your network, upgrade your Execution and Beacon clients to releases that support Glamsterdam. Upgrade all Beacon nodes first, then pull the latest SSV node image and restart the node:
+Before the Gloas fork on your network, upgrade your Execution and Beacon clients to releases that support Glamsterdam. Upgrade all Beacon nodes first, then pull the latest SSV node image and restart the node, so it reads the new fork schedule:
 ```bash
 docker compose pull ssv-node
-docker compose up -d ssv-node
+docker compose up -d --force-recreate ssv-node
 ```
 See [Configuring ePBS (Gloas)](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs) for the fork schedule and details.
 
