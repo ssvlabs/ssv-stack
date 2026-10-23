@@ -63,12 +63,12 @@ The Gloas (ePBS) `Builders` block, used to connect to specific builders or relay
 ```yaml
 Builders:
   Entries:
-    - URL: "https://relay.example.com"
+    - URL: "https://builder.example.com"
 ```
 * Uncomment `SHARE_CONFIG=/data/builders.yaml` in `ssv.env`
 * Restart the stack with `docker compose up -d`
 
-The `Builders` block must be identical on all operators of every cluster that shares a validator. See [Direct builder connections](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#direct-builder-connections-optional) for details.
+The `Builders` block must be identical on all operators of every cluster that shares a validator. See [Direct builder connections](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#direct-builder-connections-optional) for details, and [Using relays after Gloas](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#using-relays-after-gloas) to connect to relays.
 
 ### Run with DKG node
 You can also run the stack with DKG, simplifying the setup process.
