@@ -8,7 +8,7 @@ It includes Prometheus, which scrapes the SSV node and Grafana which has dashboa
 ### Prerequisites
 * `docker`
 * `docker compose` version >= 2.0
-* `ssv-node` version >= `v2.1.0`
+* `ssv-node` version >= `v2.5.0` (required from the Gloas fork on)
 
 ### Clone the repository
 
@@ -48,6 +48,33 @@ Run in background
 ```bash
 docker compose up -d
 ```
+
+### Glamsterdam (Gloas) upgrade
+Before the Gloas fork on your network, upgrade your Execution and Beacon clients to releases that support Glamsterdam. Upgrade all Beacon nodes first, then pull the latest SSV node image and restart the node, so it reads the new fork schedule:
+```bash
+docker compose pull ssv-node
+docker compose up -d --force-recreate ssv-node
+```
+If the fork date changes, upgrade your Beacon nodes again and recreate the SSV node the same way. Otherwise it shuts down near the old fork epoch.
+
+See [Configuring ePBS (Gloas)](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs) for the fork schedule and details.
+
+### Builders configuration (optional)
+The Gloas (ePBS) `Builders` block, used to connect to specific builders or relays, is available only in YAML. To use it:
+* Create `./ssv-node-data/builders.yaml` with the block, for example:
+```yaml
+Builders:
+  Entries:
+    - URL: "https://builder.example.com"
+```
+* Add `SHARE_CONFIG=/data/builders.yaml` to `ssv.env`, or uncomment it if your `ssv.env` already contains it
+* Recreate the node so it loads the file, also after any later change to `builders.yaml`:
+```bash
+docker compose up -d --force-recreate ssv-node
+```
+If `builders.yaml` is missing or the `Builders` block is invalid, the node won't start. Check `docker compose logs ssv-node` after recreating it.
+
+The `Builders` block must be identical on all operators of every cluster that shares a validator. See [Direct builder connections](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#direct-builder-connections-optional) for details, and [Using relays after Gloas](https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-epbs#using-relays-after-gloas) to connect to relays.
 
 ### Run with DKG node
 You can also run the stack with DKG, simplifying the setup process.

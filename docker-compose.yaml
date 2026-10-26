@@ -13,7 +13,7 @@ services:
       - 13001:13001/tcp # p2p port
       - 12001:12001/udp # p2p port
       - 127.0.0.1:15000:15000 # Metrics port
-      - 127.0.0.1:16000:16000 # SSVAPI port
+      - 16000:16000 # SSVAPI port
     networks: [local-docker]
     volumes:
       - ./ssv-node-data:/data
