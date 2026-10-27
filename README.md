@@ -24,7 +24,7 @@ Edit the `ssv.env` file and adjust the settings to your needs.
 The minimum you need to change is:
 * `BEACON_NODE_ADDR` - the address of the beacon node
 * `ETH_1_ADDR` - the address of the eth1 node
-* `NETWORK` - the network you are running on (`mainnet`, `holesky`, etc)
+* `NETWORK` - the network you are running on (`mainnet`, `hoodi`, `sepolia`)
 
 Check the `ssv.example.env` file for details for all the others settings you can adjust.
 
