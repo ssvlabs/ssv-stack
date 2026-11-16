@@ -5592,14 +5592,14 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(otel_scope_info{otel_scope_name=~\"github.com/ssvlabs/.*\"},pod)",
+        "definition": "label_values({otel_scope_name=~\"github.com/ssvlabs/.*\"},pod)",
         "includeAll": true,
         "multi": true,
         "name": "pod",
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(otel_scope_info{otel_scope_name=~\"github.com/ssvlabs/.*\"},pod)",
+          "query": "label_values({otel_scope_name=~\"github.com/ssvlabs/.*\"},pod)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
