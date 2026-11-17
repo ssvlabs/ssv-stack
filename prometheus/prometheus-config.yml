@@ -5,10 +5,6 @@ global:
     - OpenMetricsText1.0.0
     - OpenMetricsText0.0.1
     - PrometheusText0.0.4
-  # Store metric and label names with underscores (ssv_cl_sync_distance), as the
-  # dashboard and alert rules expect. Without this, Prometheus 3 asks for UTF-8
-  # names, and SSV Node v2.5.0 and older serve dotted names (ssv.cl.sync.distance).
-  metric_name_escaping_scheme: underscores
   evaluation_interval: 15s
 
 scrape_configs:

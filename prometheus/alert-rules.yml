@@ -44,38 +44,57 @@ groups:
           The node may be unable to participate reliably in consensus or duties.
 
     - alert: SSVNoDutiesScheduled
+      # The "or 0 * ..." part covers a node that has not scheduled a single duty since it
+      # started: the counter only exists after its first duty. The uptime check keeps the
+      # alert quiet while a new node starts.
       expr: |
-        sum by (pod) (rate(ssv_duty_scheduler_executions_total{ssv_runner_role="COMMITTEE"}[10m])) == 0
+        (
+          sum by (pod) (rate(ssv_duty_scheduler_executions_total{ssv_runner_role="COMMITTEE"}[10m]))
+          or
+          0 * sum by (pod) (ssv_validator_validators_per_status{ssv_validator_status="attesting"})
+        ) == 0
         and on (pod)
-        sum by (pod) (ssv_validator_validators_per_status{ssv_validator_status="participating"}) > 0
+        sum by (pod) (ssv_validator_validators_per_status{ssv_validator_status="attesting"}) > 0
+        and on (pod)
+        max by (pod) (time() - process_start_time_seconds{job="ssv"}) > 1800
       for: 10m
       labels:
         severity: critical
       annotations:
-        summary: "No new duties have been scheduled in 10 minutes"
+        summary: "No new duties have been scheduled in 20 minutes"
         description: |
-          The node has participating validators, but it has not scheduled any COMMITTEE duties
-          (attestations and sync committee) in the last 10 minutes.
+          The node has attesting validators, but it has not scheduled any COMMITTEE duties
+          (attestations and sync committee) for about 20 minutes.
           Check the node logs, network connections, and beacon node status.
 
     - alert: SSVBeaconNodeNotSynced
       expr: ssv_cl_sync_status{ssv_cl_sync_status!="synced"} == 1
       for: 5m
       labels:
-        severity: critical
+        severity: warning
       annotations:
         summary: "Beacon node is not synced"
         description: |
           The beacon node at {{ $labels.server_address }} reports status "{{ $labels.ssv_cl_sync_status }}"
-          for more than 5 minutes. This will disrupt the SSV node's operation.
+          for more than 5 minutes. If the SSV node has no other synced beacon node, it restarts itself.
+
+    - alert: SSVNodeRestarting
+      expr: changes(process_start_time_seconds{job="ssv"}[30m]) > 2
+      labels:
+        severity: critical
+      annotations:
+        summary: "SSV Node keeps restarting"
+        description: |
+          The SSV node restarted more than twice in 30 minutes. It shuts itself down when its beacon node,
+          execution node, event syncer or p2p stays unhealthy. Check the node logs.
 
     - alert: SSVValidatorPerformance
-      expr: sum(ssv_runner_submissions{ssv_beacon_role="ATTESTER"}) / sum(ssv_validator_validators_per_status{ssv_validator_status="participating"}) < 0.95
+      expr: sum by (pod) (ssv_runner_submissions{ssv_beacon_role="ATTESTER"}) / sum by (pod) (ssv_validator_validators_per_status{ssv_validator_status="attesting"}) < 0.95
       for: 15m
       labels:
         severity: warning
       annotations:
         summary: "SSV Validator performance is below threshold"
         description: |
-          The ratio of submitted attestations to active validators is below 95% for more than 15 minutes.
+          The ratio of submitted attestations to attesting validators is below 95% for more than 15 minutes.
           This could indicate performance issues with the SSV node or network.
