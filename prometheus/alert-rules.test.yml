@@ -1,0 +1,113 @@
+# Unit tests for alert-rules.yml. Run from the repository root:
+#   docker run --rm -v "$PWD/prometheus:/p:ro" --entrypoint promtool prom/prometheus:latest test rules /p/alert-rules.test.yml
+rule_files: [alert-rules.yml]
+evaluation_interval: 1m
+tests:
+  # Duties: fires when committee duties stop on a node with attesting validators.
+  - interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="ssv",pod="n1"}'
+        values: '-3600x80'
+      - series: 'ssv_duty_scheduler_executions_total{pod="n1",ssv_runner_role="COMMITTEE"}'
+        values: '0+10x10 100x70'
+      - series: 'ssv_validator_validators_per_status{pod="n1",ssv_validator_status="attesting"}'
+        values: '4x80'
+    alert_rule_test:
+      - {eval_time: 10m, alertname: SSVNoDutiesScheduled, exp_alerts: []}
+      - eval_time: 35m
+        alertname: SSVNoDutiesScheduled
+        exp_alerts:
+          - exp_labels: {pod: n1, severity: critical}
+            exp_annotations:
+              summary: "No new duties have been scheduled in 20 minutes"
+              description: "The node has attesting validators, but it has not scheduled any COMMITTEE duties\n(attestations and sync committee) for about 20 minutes.\nCheck the node logs, network connections, and beacon node status.\n"
+  # Duties: fires when a node has not scheduled a single duty since it started (no counter series).
+  - interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="ssv",pod="n1"}'
+        values: '0x60'
+      - series: 'ssv_validator_validators_per_status{pod="n1",ssv_validator_status="attesting"}'
+        values: '4x60'
+    alert_rule_test:
+      - {eval_time: 35m, alertname: SSVNoDutiesScheduled, exp_alerts: []}
+      - eval_time: 45m
+        alertname: SSVNoDutiesScheduled
+        exp_alerts:
+          - exp_labels: {pod: n1, severity: critical}
+            exp_annotations:
+              summary: "No new duties have been scheduled in 20 minutes"
+              description: "The node has attesting validators, but it has not scheduled any COMMITTEE duties\n(attestations and sync committee) for about 20 minutes.\nCheck the node logs, network connections, and beacon node status.\n"
+  # Duties: no alert on a node without attesting validators.
+  - interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="ssv",pod="n1"}'
+        values: '-3600x60'
+      - series: 'ssv_duty_scheduler_executions_total{pod="n1",ssv_runner_role="COMMITTEE"}'
+        values: '0x60'
+      - series: 'ssv_validator_validators_per_status{pod="n1",ssv_validator_status="attesting"}'
+        values: '0x60'
+    alert_rule_test:
+      - {eval_time: 45m, alertname: SSVNoDutiesScheduled, exp_alerts: []}
+  # Duties: no alert on a healthy node.
+  - interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="ssv",pod="n1"}'
+        values: '-3600x60'
+      - series: 'ssv_duty_scheduler_executions_total{pod="n1",ssv_runner_role="COMMITTEE"}'
+        values: '0+10x60'
+      - series: 'ssv_validator_validators_per_status{pod="n1",ssv_validator_status="attesting"}'
+        values: '4x60'
+    alert_rule_test:
+      - {eval_time: 45m, alertname: SSVNoDutiesScheduled, exp_alerts: []}
+  # Beacon node: fires as a warning on syncing, not on synced.
+  - interval: 1m
+    input_series:
+      - series: 'ssv_cl_sync_status{pod="n1",server_address="bn:5052",ssv_cl_sync_status="synced"}'
+        values: '1x5 0x10'
+      - series: 'ssv_cl_sync_status{pod="n1",server_address="bn:5052",ssv_cl_sync_status="syncing"}'
+        values: '0x5 1x10'
+    alert_rule_test:
+      - {eval_time: 5m, alertname: SSVBeaconNodeNotSynced, exp_alerts: []}
+      - eval_time: 12m
+        alertname: SSVBeaconNodeNotSynced
+        exp_alerts:
+          - exp_labels: {pod: n1, server_address: "bn:5052", ssv_cl_sync_status: syncing, severity: warning}
+            exp_annotations:
+              summary: "Beacon node is not synced"
+              description: "The beacon node at bn:5052 reports status \"syncing\"\nfor more than 5 minutes. If the SSV node has no other synced beacon node, it restarts itself.\n"
+  # Restarts: fires after 3 restarts in 30 minutes, not after 1.
+  - interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="ssv",pod="n1"}'
+        values: '0x10 600x10 1200x10 1800x10'
+    alert_rule_test:
+      - {eval_time: 15m, alertname: SSVNodeRestarting, exp_alerts: []}
+      - eval_time: 35m
+        alertname: SSVNodeRestarting
+        exp_alerts:
+          - exp_labels: {job: ssv, pod: n1, severity: critical}
+            exp_annotations:
+              summary: "SSV Node keeps restarting"
+              description: "The SSV node restarted more than twice in 30 minutes. It shuts itself down when its beacon node,\nexecution node, event syncer or p2p stays unhealthy. Check the node logs.\n"
+  # Performance: fires below 95% per pod, and exited validators do not count.
+  - interval: 1m
+    input_series:
+      - series: 'ssv_runner_submissions{pod="n1",ssv_beacon_role="ATTESTER"}'
+        values: '9x40'
+      - series: 'ssv_validator_validators_per_status{pod="n1",ssv_validator_status="participating"}'
+        values: '10x40'
+      - series: 'ssv_validator_validators_per_status{pod="n1",ssv_validator_status="attesting"}'
+        values: '9x40'
+      - series: 'ssv_runner_submissions{pod="n2",ssv_beacon_role="ATTESTER"}'
+        values: '10x20 8x20'
+      - series: 'ssv_validator_validators_per_status{pod="n2",ssv_validator_status="attesting"}'
+        values: '10x40'
+    alert_rule_test:
+      - {eval_time: 18m, alertname: SSVValidatorPerformance, exp_alerts: []}
+      - eval_time: 38m
+        alertname: SSVValidatorPerformance
+        exp_alerts:
+          - exp_labels: {pod: n2, severity: warning}
+            exp_annotations:
+              summary: "SSV Validator performance is below threshold"
+              description: "The ratio of submitted attestations to attesting validators is below 95% for more than 15 minutes.\nThis could indicate performance issues with the SSV node or network.\n"
